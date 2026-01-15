@@ -1,0 +1,75 @@
+-- Primeira Lista de Exercícios - SQL
+
+-- Considere as seguintes tabelas para os exercícios:
+-- CREATE TABLE pessoas (
+--     id INTEGER PRIMARY KEY,
+--     nome VARCHAR(100),
+--     idade INTEGER,
+--     peso DECIMAL(5,2),
+--     altura DECIMAL(3,2)
+-- );
+
+-- CREATE TABLE viagens (
+--     id INTEGER PRIMARY KEY,
+--     distancia DECIMAL(10,2),
+--     velocidade_media DECIMAL(5,2)
+-- );
+
+--1. Crie uma consulta que selecione todas as pessoas aptas a entrar no exército
+-- (idade > 18, peso >= 60, altura >= 1.70)
+SELECT nome, idade, peso, altura
+FROM pessoas
+WHERE idade > 18 AND peso >= 60 AND altura >= 1.70;
+
+-- 2. Crie uma consulta que inverta uma string (exemplo: "Anotaram a data da maratona")
+-- Nota: Em SQL Server, use REVERSE()
+SELECT REVERSE('Anotaram a data da maratona') AS frase_invertida;
+
+-- 3. Calcule quantos segundos existem em 2 dias, 3 horas e 5 minutos
+SELECT
+    (2 * 24 * 60 * 60) + (3 * 60 * 60) + (5 * 60) AS segundos_totais;
+
+-- 4. Calcule o tempo de viagem para uma distância e velocidade média
+-- Supondo valores: 200 km a 80 km/h
+SELECT
+    200.0 / 80.0 AS tempo_horas,
+    (200.0 / 80.0) * 60 AS tempo_minutos;
+
+-- Ou usando a tabela viagens:
+SELECT
+    distancia / velocidade_media AS tempo_horas,
+    (distancia / velocidade_media) * 60 AS tempo_minutos
+FROM viagens
+WHERE id = 1;
+
+-- 5. Crie uma tabela para armazenar informações de alunos
+CREATE TABLE alunos (
+    id INTEGER PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    matricula VARCHAR(20) UNIQUE,
+    data_nascimento DATE,
+    curso VARCHAR(50)
+);
+
+-- 6. Insira alguns dados na tabela alunos
+INSERT INTO alunos (nome, matricula, data_nascimento, curso) VALUES
+('João Silva', '2024001', '2000-05-15', 'Engenharia'),
+('Maria Santos', '2024002', '1999-08-22', 'Medicina'),
+('Pedro Oliveira', '2024003', '2001-03-10', 'Direito');
+
+-- 7. Selecione todos os alunos do curso de Engenharia
+SELECT * FROM alunos WHERE curso = 'Engenharia';
+
+-- 8. Conte quantos alunos existem por curso
+SELECT curso, COUNT(*) AS quantidade_alunos
+FROM alunos
+GROUP BY curso;
+
+-- 9. Atualize a matrícula de um aluno
+UPDATE alunos
+SET matricula = '2024001A'
+WHERE nome = 'João Silva';
+
+-- 10. Delete um aluno da tabela
+DELETE FROM alunos
+WHERE matricula = '2024003';

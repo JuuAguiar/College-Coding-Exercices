@@ -1,0 +1,79 @@
+-- Segunda Lista de Exercícios - SQL
+
+-- 1. Crie uma tabela chamada Students com matrícula como chave primária
+CREATE TABLE Students (
+    matricula INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
+
+-- 2. Selecione funcionários com salário maior que 4000
+SELECT *
+FROM employees
+WHERE salary > 4000;
+
+
+-- 3. Calcule estatísticas salariais: média, maior e menor salário
+SELECT
+    AVG(salary) AS average_salary,
+    MAX(salary) AS highest_salary,
+    MIN(salary) AS lowest_salary
+FROM employees;
+
+
+-- 4. Calcule o total recebido por cada empregado (salário + adicionais)
+SELECT
+    name,
+    salary + salt + comm AS total_received
+FROM employees;
+
+
+-- 5. Retorne a data atual
+
+SELECT CURDATE();
+
+
+
+-- 6. Soma dos salários por departamento
+SELECT
+    d.DepartmentName,
+    SUM(e.Salary) AS TotalSalaryExpenditure
+FROM Employees e
+INNER JOIN Departments d
+    ON e.DepartmentID = d.DepartmentID
+GROUP BY d.DepartmentName
+ORDER BY TotalSalaryExpenditure DESC;
+
+
+-- 7. Calcule o número de dias trabalhados desde a data de contratação
+
+SELECT
+    name,
+    DATEDIFF(CURDATE(), hire_date) AS days_worked
+FROM employees;
+
+
+-- 8. Selecione funcionários cujo nome começa com a letra M
+SELECT *
+FROM employees
+WHERE name LIKE 'M%';
+
+
+-- 9. Liste funcionários e seus respectivos departamentos
+SELECT
+    e.name AS employee_name,
+    d.name AS department_name
+FROM employees e
+INNER JOIN departments d
+    ON e.department_id = d.department_id
+ORDER BY d.name;
+
+
+-- 10. Liste funcionários e seus respectivos gerentes
+SELECT
+    e.Name AS EmployeeName,
+    m.Name AS ManagerName
+FROM Employees e
+INNER JOIN Employees m
+    ON e.ManagerId = m.Id
+ORDER BY ManagerName;

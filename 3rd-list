@@ -1,0 +1,188 @@
+-- =========================================================
+-- LISTA DE EXERCÍCIOS SQL – EMP / DEPT / SALGRADE
+-- =========================================================
+
+
+-- 1. Verificar se existe algum empregado que recebe mais que o seu gerente
+SELECT e.ename AS empregado, e.sal AS salario_empregado,
+       m.ename AS gerente, m.sal AS salario_gerente
+FROM emp e
+JOIN emp m ON e.mgr = m.empno
+WHERE e.sal > m.sal;
+
+
+-- 2. Qual a média salarial, o maior e menor salário por cargo (JOB)?
+SELECT
+    job,
+    AVG(sal) AS media_salarial,
+    MAX(sal) AS maior_salario,
+    MIN(sal) AS menor_salario
+FROM emp
+GROUP BY job;
+
+
+-- 3. Exibir o nome dos empregados e o nome de seu respectivo departamento
+-- (ordenar por departamento, em seguida por empregado)
+SELECT
+    e.ename AS empregado,
+    d.dname AS departamento
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno
+ORDER BY d.dname, e.ename;
+
+
+-- 4. Listar os gerentes (MANAGER) e analistas (ANALYST)
+-- que ganham mais de 2900 de salário
+SELECT ename, job, sal
+FROM emp
+WHERE job IN ('MANAGER', 'ANALYST')
+  AND sal > 2900;
+
+
+-- 5. Adicionar coluna phone na tabela EMP
+ALTER TABLE emp
+ADD phone VARCHAR(20);
+
+
+-- 6. Exibir 15% do salário de todos os funcionários
+-- do departamento de RESEARCH
+SELECT
+    e.ename,
+    e.sal,
+    e.sal * 0.15 AS quinze_porcento
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno
+WHERE d.dname = 'RESEARCH';
+
+
+-- 7. Inserir um novo empregado com o seu nome
+-- lotado no departamento de RESEARCH
+INSERT INTO emp (empno, ename, job, mgr, hiredate, sal, comm, deptno)
+VALUES (
+    9999,
+    'SEU_NOME',
+    'ANALYST',
+    NULL,
+    CURDATE(),
+    3000,
+    NULL,
+    (SELECT deptno FROM dept WHERE dname = 'RESEARCH')
+);
+
+
+-- 8. Concatenar as colunas ename e job e
+-- exibir o número total de caracteres da concatenação
+SELECT
+    ename,
+    job,
+    LENGTH(CONCAT(ename, job)) AS total_caracteres
+FROM emp;
+
+
+-- 9. Calcular quanto seria o salário dos empregados
+-- se eles tivessem recebido 5% de aumento a cada 5 anos de casa
+SELECT
+    ename,
+    sal,
+    sal * POW(1.05, FLOOR(DATEDIFF(CURDATE(), hiredate) / 1825)) AS salario_com_aumento
+FROM emp;
+
+
+-- 10. Calcular a média salarial por cargo
+SELECT
+    job,
+    AVG(sal) AS media_salarial
+FROM emp
+GROUP BY job;
+
+
+-- 11. Qual a média salarial, o maior e menor salário
+-- dos empregados por departamento?
+SELECT
+    d.dname AS departamento,
+    AVG(e.sal) AS media_salarial,
+    MAX(e.sal) AS maior_salario,
+    MIN(e.sal) AS menor_salario
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno
+GROUP BY d.dname;
+
+
+-- 12. Quantos funcionários em cada departamento?
+SELECT
+    d.dname AS departamento,
+    COUNT(e.empno) AS total_funcionarios
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno
+GROUP BY d.dname;
+
+
+-- 13. Exibir a data da última contratação por departamento
+SELECT
+    d.dname AS departamento,
+    MAX(e.hiredate) AS ultima_contratacao
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno
+GROUP BY d.dname;
+
+
+-- 14. Remover a coluna phone da tabela EMP
+ALTER TABLE emp
+DROP COLUMN phone;
+
+
+-- 15. Alterar a restrição NULL para NOT NULL
+-- da coluna ename na tabela EMP
+ALTER TABLE emp
+ALTER COLUMN ename VARCHAR(50) NOT NULL;
+
+
+-- 16. Criar a tabela SALGRADE
+CREATE TABLE salgrade (
+    grade INT,
+    losal INT,
+    hisal INT
+);
+
+
+-- 17. Inserir as faixas salariais em SALGRADE
+INSERT INTO salgrade VALUES (1, 700, 1200);
+INSERT INTO salgrade VALUES (2, 1201, 1400);
+INSERT INTO salgrade VALUES (3, 1401, 2000);
+INSERT INTO salgrade VALUES (4, 2001, 3000);
+INSERT INTO salgrade VALUES (5, 3001, 9999);
+
+
+-- 18. Exibir o nome do empregado, seu departamento,
+-- seu salário e sua respectiva faixa salarial
+SELECT
+    e.ename AS empregado,
+    d.dname AS departamento,
+    e.sal AS salario,
+    s.grade AS faixa_salarial
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno
+JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal;
+
+
+-- 19. Deletar da tabela EMP o empregado que tem o seu nome
+DELETE FROM emp
+WHERE ename = 'SEU_NOME';
+
+
+-- 20. Escrever uma frase no formato solicitado
+SELECT
+    CONCAT(
+        'O empregado ',
+        e.ename,
+        ' do departamento ',
+        d.dname,
+        ' recebe salário de R$ ',
+        e.sal,
+        CASE
+            WHEN e.comm IS NOT NULL THEN CONCAT(' mais comissão de R$ ', e.comm, '.')
+            ELSE '.'
+        END
+    ) AS frase
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno;
